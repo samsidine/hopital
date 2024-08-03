@@ -45,6 +45,4 @@ public MedecinDto getById(@PathVariable (name= "id") Long id){
     public void delete(@PathVariable (name = "id") Long id){
         imedecinService.deleteById(id);
 }
-
-
   }
