@@ -8,6 +8,9 @@ import same.code.hopital.dto.MedecinDto;
 import same.code.hopital.dto.NewRendezVousDto;
 import same.code.hopital.dto.PatientDto;
 import same.code.hopital.dto.RendezVousDto;
+import same.code.hopital.entity.MedecinEntity;
+import same.code.hopital.entity.UserEntity;
+import same.code.hopital.repository.UserRepository;
 import same.code.hopital.service.ImedecinService;
 import same.code.hopital.service.IpatientService;
 import same.code.hopital.service.IrendezVousService;
@@ -27,6 +30,9 @@ public class RendezVousController {
 
     @Autowired
     ImedecinService medecinService;
+
+    @Autowired
+    UserRepository userRepository;
 
     @GetMapping("/rendezVous")
     public List<RendezVousDto> getRendezVous(){
@@ -52,6 +58,19 @@ public class RendezVousController {
         irendezVousService.deleteById(id);
     }
 
+    @GetMapping("/rendezVous/{idUser}")
+    public List<RendezVousDto>  getRendezVousByUser(@PathVariable(name ="idUser" ) Long idUser) {
+        //Long idUs = Long.parseLong(idUser);
+        UserEntity user = userRepository.findById(idUser).get();
+        if (user.getMedecin()!=null){
+            MedecinDto medecin = medecinService.getMedecinById(user.getMedecin().getId());
+            return  irendezVousService.findAllByMedecin(medecin);
+        }else {
+            PatientDto patient = patientService.getPatientById(user.getPatient().getId());
+            return  irendezVousService.findAllByPatient(patient);
+        }
+
+    }
     private RendezVousDto getDataRendezVous(NewRendezVousDto newRV){
 
         RendezVousDto rendezVousDto = new RendezVousDto();

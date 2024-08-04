@@ -3,11 +3,14 @@ package same.code.hopital.service;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import same.code.hopital.dto.MedecinDto;
 import same.code.hopital.dto.NewRendezVousDto;
 import same.code.hopital.dto.PatientDto;
 import same.code.hopital.dto.RendezVousDto;
 import same.code.hopital.entity.PatientEntity;
 import same.code.hopital.entity.RendezVousEntity;
+import same.code.hopital.mapping.MedecinMapper;
+import same.code.hopital.mapping.PatientMapper;
 import same.code.hopital.mapping.RendezVousMapper;
 import same.code.hopital.repository.IrendezVousRepository;
 
@@ -24,6 +27,12 @@ public class RendezVousService implements IrendezVousService {
 
     @Autowired
     RendezVousMapper rendezVousMapper;
+
+    @Autowired
+    PatientMapper patientMapper;
+
+    @Autowired
+    MedecinMapper medecinMapper;
 
     @Override
     public RendezVousDto save(RendezVousDto rendezVousDto) {
@@ -71,5 +80,21 @@ public class RendezVousService implements IrendezVousService {
     @Override
     public void deleteById(long id) {
         irendezVousRepository.deleteById(id);
+    }
+
+    @Override
+    public List<RendezVousDto> findAllByPatient(PatientDto patient) {
+        List<RendezVousEntity> rendezVousEntities  = irendezVousRepository.findAllByPatient(patientMapper.getEntity(patient) );
+        List<RendezVousDto> rendezVousDtos = rendezVousEntities.stream().map(rendezVous -> rendezVousMapper.getDto(rendezVous)).collect(Collectors.toList());
+
+        return rendezVousDtos;
+    }
+
+    @Override
+    public List<RendezVousDto> findAllByMedecin(MedecinDto medecin) {
+        List<RendezVousEntity> rendezVousEntities  = irendezVousRepository.findAllByMedecin(medecinMapper.getEntity(medecin));
+        List<RendezVousDto> rendezVousDtos = rendezVousEntities.stream().map(rendezVous -> rendezVousMapper.getDto(rendezVous)).collect(Collectors.toList());
+
+        return rendezVousDtos;
     }
 }
